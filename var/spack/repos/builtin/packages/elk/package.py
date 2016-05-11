@@ -1,46 +1,46 @@
-from spack import *
 import spack
+from spack import *
 
 
 class Elk(Package):
-    '''An all-electron full-potential linearised augmented-plane wave
-    (FP-LAPW) code with many advanced features.'''
+    """An all-electron full-potential linearised augmented-plane wave
+    (FP-LAPW) code with many advanced features."""
 
     homepage = 'http://elk.sourceforge.net/'
-    url      = 'https://sourceforge.net/projects/elk/files/elk-3.3.17.tgz'
+    url = 'https://sourceforge.net/projects/elk/files/elk-3.3.17.tgz'
 
     version('3.3.17', 'f57f6230d14f3b3b558e5c71f62f0592')
 
     # Elk provides these libraries, but allows you to specify your own
-    variant('blas',   default=True, description='Build with custom BLAS library')
-    variant('lapack', default=True, description='Build with custom LAPACK library')
-    variant('fft',    default=True, description='Build with custom FFT library')
+    variant('blas', default=True, description='Build with custom BLAS library')
+    variant('lapack',
+            default=True,
+            description='Build with custom LAPACK library')
+    variant('fft', default=True, description='Build with custom FFT library')
 
     # Elk does not provide these libraries, but allows you to use them
-    variant('mpi',    default=True, description='Enable MPI parallelism')
+    variant('mpi', default=True, description='Enable MPI parallelism')
     variant('openmp', default=True, description='Enable OpenMP support')
-    variant('libxc',  default=True, description='Link to Libxc functional library')
+    variant('libxc',
+            default=True,
+            description='Link to Libxc functional library')
 
-    depends_on('blas',   when='+blas')
+    depends_on('blas', when='+blas')
     depends_on('lapack', when='+lapack')
-    depends_on('fftw',   when='+fft')
-    depends_on('mpi',    when='+mpi')
-    depends_on('libxc',  when='+libxc')
+    depends_on('fftw', when='+fft')
+    depends_on('mpi', when='+mpi')
+    depends_on('libxc', when='+libxc')
 
     # Cannot be built in parallel
     parallel = False
 
-
     def configure(self, spec):
         # Dictionary of configuration options
-        config = {
-            'MAKE':      'make',
-            'AR':        'ar'
-        }
+        config = {'MAKE': 'make', 'AR': 'ar'}
 
         # Compiler-specific flags
         flags = ''
-        if   self.compiler.name == 'intel':
+        if self.compiler.name == 'intel':
             flags = '-O3 -ip -unroll -no-prec-div'
         elif self.compiler.name == 'gcc':
             flags = '-O3 -ffast-math -funroll-loops'
@@ -58,17 +58,19 @@ class Elk(Package):
         # BLAS/LAPACK support
         # Note: BLAS/LAPACK must be compiled with OpenMP support
         # if the +openmp variant is chosen
-        blas   = 'blas.a'
+        blas = 'blas.a'
         lapack = 'lapack.a'
-        if '+blas'   in spec:
-            blas   = join_path(spec['blas'].prefix.lib,   'libblas.so')
+        if '+blas' in spec:
+            blas = join_path(spec['blas'].prefix.lib, 'libblas.so')
         if '+lapack' in spec:
             lapack = join_path(spec['lapack'].prefix.lib, 'liblapack.so')
-        config['LIB_LPK'] = ' '.join([lapack, blas]) # lapack must come before blas
+        config['LIB_LPK'] = ' '.join(
+            [lapack, blas])  # lapack must come before blas
 
         # FFT support
         if '+fft' in spec:
-            config['LIB_FFT'] = join_path(spec['fftw'].prefix.lib, 'libfftw3.so')
+            config['LIB_FFT'] = join_path(spec['fftw'].prefix.lib,
+                                          'libfftw3.so')
             config['SRC_FFT'] = 'zfftifc_fftw.f90'
         else:
             config['LIB_FFT'] = 'fftlib.a'
@@ -93,13 +95,11 @@ class Elk(Package):
         # Libxc support
         if '+libxc' in spec:
             config['LIB_libxc'] = ' '.join([
-                join_path(spec['libxc'].prefix.lib, 'libxcf90.so'),
-                join_path(spec['libxc'].prefix.lib, 'libxc.so')
+                join_path(spec['libxc'].prefix.lib, 'libxcf90.so'), join_path(
+                    spec['libxc'].prefix.lib, 'libxc.so')
             ])
             config['SRC_libxc'] = ' '.join([
-                'libxc_funcs.f90',
-                'libxc.f90',
-                'libxcifc.f90'
+                'libxc_funcs.f90', 'libxc.f90', 'libxcifc.f90'
             ])
         else:
             config['SRC_libxc'] = 'libxcifc_stub.f90'
@@ -108,7 +108,6 @@ class Elk(Package):
         with open('make.inc', 'w') as inc:
             for key in config:
                 inc.write('{0} = {1}\n'.format(key, config[key]))
-
 
     def install(self, spec, prefix):
         # Elk only provides an interactive setup script
@@ -120,10 +119,9 @@ class Elk(Package):
         # The Elk Makefile does not provide an install target
         mkdirp(prefix.bin)
 
-        install('src/elk',                   prefix.bin)
-        install('src/eos/eos',               prefix.bin)
+        install('src/elk', prefix.bin)
+        install('src/eos/eos', prefix.bin)
         install('src/spacegroup/spacegroup', prefix.bin)
 
         install_tree('examples', join_path(prefix, 'examples'))
-        install_tree('species',  join_path(prefix, 'species'))
-
+        install_tree('species', join_path(prefix, 'species'))
