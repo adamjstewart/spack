@@ -432,11 +432,23 @@ class Python(AutotoolsPackage):
         library   = self.get_config_var('LIBRARY')
         ldlibrary = self.get_config_var('LDLIBRARY')
 
+        # MacOS/X Frameworks throw a spanner in the soup
+        libdir_prefix = os.path.dirname(libdir)
+        ldlibrary_dir = os.path.dirname(ldlibrary)
+        ldlibrary_name = os.path.basename(ldlibrary)
+        framework_library = ""
+        if len(libdir_prefix) and len(ldlibrary_dir) and len(ldlibrary_name) \
+           and libdir_prefix[-len(ldlibrary_dir):] == ldlibrary_dir \
+           and os.path.exists(os.path.join(libdir_prefix, ldlibrary_name)):
+            framework_ldlibrary = os.path.join(libdir_prefix, ldlibrary_name)
+
         # Prefer shared libraries
         if os.path.exists(os.path.join(libdir, ldlibrary)):
             return LibraryList(os.path.join(libdir, ldlibrary))
         elif os.path.exists(os.path.join(libdir, library)):
             return LibraryList(os.path.join(libdir, library))
+        elif os.path.exists(framework_ldlibrary):
+            return LibraryList(framework_ldlibrary)
         else:
             msg = 'Unable to locate {0} libraries in {1}'
             raise RuntimeError(msg.format(self.name, libdir))
