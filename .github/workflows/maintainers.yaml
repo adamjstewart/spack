@@ -16,7 +16,7 @@ jobs:
     - name: Find changed packages
       run: |
         . share/spack/setup-env.sh
-        PACKAGES=$(spack pkg changed --type ARC ${{ github.base_ref }}...)
+        PACKAGES=$(spack pkg changed --type ARC ${{ github.base_ref }} ${{ github.head_ref }})
         echo "Modified packages: $PACKAGES"
         echo "::set-env name=PACKAGES::$PACKAGES"
     - name: Find maintainers
