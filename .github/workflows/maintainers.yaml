@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: git fetch origin ${{ github.base_ref }}
-    - uses: ./.github/actions/my-maintainers
+    - uses: ./.github/actions/maintainers
     - run: |
         echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
         echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
