@@ -14,6 +14,7 @@ class PyTensorflow(Package, CudaPackage):
     url      = "https://github.com/tensorflow/tensorflow/archive/v2.2.0.tar.gz"
 
     maintainers = ['adamjstewart']
+
     import_modules = ['tensorflow']
 
     version('2.2.0',  sha256='69cd836f87b8c53506c4f706f655d423270f5a563b76dc1cfa60fbc3184185a3')
