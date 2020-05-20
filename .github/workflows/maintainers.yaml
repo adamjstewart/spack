@@ -1,0 +1,28 @@
+name: maintainers
+
+on:
+  pull_request:
+    branches:
+    - develop
+    - 'github/maintainer-actions'
+    paths:
+      - 'var/spack/repos/builtin/packages/**'
+
+jobs:
+  maintainers:
+    runs-on: ubuntu-latest
+    steps:
+#    - name: Setup Python
+#      uses: actions/setup-python@v1
+#      with:
+#        python-version: 3.8
+    - name: Clone Spack
+      uses: actions/checkout@v2
+    - name: Find changed packages
+      run: |
+        . share/spack/setup-env.sh
+        echo '::set-env name=PACKAGES::$(spack pkg changed --types ARC ${{ github.base_ref }}...)'
+    - name: Find maintainers
+      run: |
+        . share/spack/setup-env.sh
+        echo '::set-env name=MAINTAINERS::$(spack maintainers $PACKAGES)'
