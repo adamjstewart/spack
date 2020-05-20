@@ -12,19 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - run: git fetch origin ${{ github.base_ref }}
+    - uses: spack/maintainers
     - run: |
-        git remote add upstream https://github.com/spack/spack.git
-        git fetch upstream ${{ github.base_ref }}
-    - name: Find changed packages
-      run: |
-        . share/spack/setup-env.sh
-        PACKAGES=$(spack pkg changed --type ARC ${{ github.base_ref }}...)
-        echo "Modified packages: $PACKAGES"
-        echo "::set-env name=PACKAGES::$PACKAGES"
-    - name: Find maintainers
-      run: |
-        . share/spack/setup-env.sh
-        echo "Modified packages: $PACKAGES"
-        MAINTAINERS=$(spack maintainers $PACKAGES)
-        echo "Package maintainers: $MAINTAINERS"
-        echo "::set-env name=MAINTAINERS::$MAINTAINERS"
+        echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
+        echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
+        echo ${{ steps.maintainers.outputs.maintainers }}
+        echo ${{ steps.maintainers.outputs.author }}
