@@ -1,6 +1,4 @@
-FROM python:3.7-alpine
-
-RUN apt-get install git
+FROM python:3.8
 
 COPY entrypoint.py /entrypoint.py
 
