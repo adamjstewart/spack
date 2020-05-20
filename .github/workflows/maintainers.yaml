@@ -13,9 +13,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: git fetch origin ${{ github.base_ref }}
-    - uses: spack/.github/actions/my-maintainers
-    - run: |
-        echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
-        echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
-        echo ${{ steps.maintainers.outputs.maintainers }}
-        echo ${{ steps.maintainers.outputs.author }}
+    #- uses: spack/.github/actions/my-maintainers
+    #- run: |
+    #    echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
+    #    echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
+    #    echo ${{ steps.maintainers.outputs.maintainers }}
+    #    echo ${{ steps.maintainers.outputs.author }}
