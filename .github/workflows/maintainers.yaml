@@ -27,7 +27,8 @@ jobs:
       id: maintainers
       uses: ./.github/actions/maintainers
       with:
-        args: ${{ github.actor }} ${{ steps.changes.outputs.files }}
+        author: ${{ github.actor }}
+        changes: ${{ steps.changes.outputs.files }}
     - run: |
         echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
         echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
