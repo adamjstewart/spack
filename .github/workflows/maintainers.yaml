@@ -11,12 +11,25 @@ jobs:
   maintainers:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - run: git fetch -u origin develop:develop
-    - uses: ./.github/actions/maintainers
+    - name: Clone Spack
+      uses: actions/checkout@v2
+    - name: Get Changed Files
+      id: changes
+      uses: lots0logs/gh-action-get-changed-files@2.0.6
+      with:
+        token: GITHUB_TOKEN
+    - run: |
+        echo ${{ steps.changes.outputs.all }}
+        echo ${{ steps.changes.outputs.added }}
+        echo ${{ steps.changes.outputs.deleted }}
+        echo ${{ steps.changes.outputs.renamed }}
+        echo ${{ steps.changes.outputs.modified }}
+    - name: Get Maintainers
       id: maintainers
+      uses: ./.github/actions/maintainers
+      with:
+        args: ${{ github.actor }} ${{ steps.changes.outputs.all }}
     - run: |
         echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
         echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
         echo ${{ steps.maintainers.outputs.maintainers }}
-        echo ${{ steps.maintainers.outputs.author }}

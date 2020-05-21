@@ -11,16 +11,17 @@ This action checks which packages have changed in a PR, and checks
 whether or not these packages have maintainers.
 """
 
+import argparse
+import io
 import json
 import os
+import pathlib
 import subprocess
+import sys
 
 
 def spack(*args):
     """Run the spack executable with arguments, and return the output split.
-
-    This does just enough to run `spack pkg` and `spack maintainers`, the
-    two commands used by this action.
     """
     github_workspace = os.environ['GITHUB_WORKSPACE']
     spack = os.path.join(github_workspace, 'bin', 'spack')
@@ -28,24 +29,20 @@ def spack(*args):
     return output.stdout.decode('utf-8').split()
 
 
-def main():
-    event_path = os.environ['GITHUB_EVENT_PATH']
+def main(author, changes):
+    """Main action method.
 
-    with open(event_path) as f:
-        data = json.load(f)
-
-    # Get data from the event payload
-    pr_data = data['pull_request']
-    base_branch_name = pr_data['base']['ref']
-    author = pr_data['user']['login']
-
-    # Get a list of packages that this PR modified
-    changed_pkgs = spack(
-        'pkg', 'changed', '--type', 'ARC', base_branch_name + '...')
-
-    foo = ['a', 'b', 'c']
-    print('::warning::Foo - {}'.format(foo))
-    print('::warning::Changed packages - {}'.format(changed_pkgs))
+    Parameters:
+        author (str): the GitHub login of the PR author
+        changes (list): the files changed in this PR
+    """
+    # Find a set of modified packages
+    changed_pkgs = set()
+    for filename in changes:
+        if filename.startswith('var/spack/repos/builtin/packages/'):
+            filename = pathlib.Path(filename)
+            pkg = filename.parts[5]
+            changed_pkgs.add(pkg)
 
     # Get maintainers for all modified packages
     packages_with_maintainers = []
@@ -60,16 +57,32 @@ def main():
             packages_without_maintainers.append(pkg)
 
     # No need to ask the author to review their own PR
-    maintainers -= set([author])
+    maintainers.discard(author)
 
     # Return outputs so that later GitHub actions can access them
-    print('::set-output name=packages-with-maintainers::"{}"'.format(
+    print('::set-output name=packages-with-maintainers::{}'.format(
         ' '.join(packages_with_maintainers)))
-    print('::set-output name=packages-without-maintainers::"{}"'.format(
+    print('::set-output name=packages-without-maintainers::{}'.format(
         ' '.join(packages_without_maintainers)))
-    print('::set-output name=maintainers::"{}"'.format(' '.join(maintainers)))
-    print('::set-output name=author::{}'.format(author))
+    print('::set-output name=maintainers::{}'.format(' '.join(maintainers)))
 
 
-if __name__ == "__main__":
-    main()
+class JSONAction(argparse.Action):
+    """Parse a JSON string."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, json.loads(values))
+
+
+if __name__ == '__main__':
+    # Set up parser
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument('author', help='GitHub username of PR author')
+    parser.add_argument('changes', action=JSONAction,
+                        help='JSON array of changed files')
+
+    # Parse supplied arguments
+    args = parser.parse_args()
+
+    main(args.author, args.changes)
