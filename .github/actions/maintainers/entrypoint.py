@@ -67,22 +67,15 @@ def main(author, changes):
     print('::set-output name=maintainers::{}'.format(' '.join(maintainers)))
 
 
-class JSONAction(argparse.Action):
-    """Parse a JSON string."""
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, json.loads(values))
-
-
 if __name__ == '__main__':
     # Set up parser
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument('author', help='GitHub username of PR author')
-    parser.add_argument('changes', action=JSONAction,
-                        help='JSON array of changed files')
+    parser.add_argument('changes',
+                        help='Comma-separated list of changed files')
 
     # Parse supplied arguments
     args = parser.parse_args()
 
-    main(args.author, args.changes)
+    main(args.author, args.changes.split(','))

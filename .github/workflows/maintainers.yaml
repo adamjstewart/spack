@@ -16,6 +16,8 @@ jobs:
     - name: Get Changed Files
       id: changes
       uses: trilom/file-changes-action@v1.2.4
+      with:
+        output: ','
     - run: |
         echo ${{ steps.changes.outputs.files }}
         echo ${{ steps.changes.outputs.files_added }}
