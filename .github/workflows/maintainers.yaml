@@ -33,3 +33,17 @@ jobs:
         echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
         echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
         echo ${{ steps.maintainers.outputs.maintainers }}
+    - name: Notify Maintainers
+      uses: harupy/comment-on-pr@v0.1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        filename: notify-maintainers.md
+      if: ${{ steps.maintainers.outputs.maintainers }}
+    - name: Request Maintainers
+      uses: harupy/comment-on-pr@v0.1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        filename: request-maintainers.md
+      if: ${{ steps.maintainers.outputs.packages-without-maintainers }}
