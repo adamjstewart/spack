@@ -43,6 +43,10 @@ def main():
     changed_pkgs = spack(
         'pkg', 'changed', '--type', 'ARC', base_branch_name + '...')
 
+    foo = ['a', 'b', 'c']
+    print('::warning::Foo - {}'.format(foo))
+    print('::warning::Changed packages - {}'.format(changed_pkgs))
+
     # Get maintainers for all modified packages
     packages_with_maintainers = []
     packages_without_maintainers = []
