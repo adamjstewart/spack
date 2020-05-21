@@ -59,11 +59,11 @@ def main():
     maintainers -= set([author])
 
     # Return outputs so that later GitHub actions can access them
-    print('::set-output name=packages-with-maintainers::{}'.format(
+    print('::set-output name=packages-with-maintainers::"{}"'.format(
         ' '.join(packages_with_maintainers)))
-    print('::set-output name=packages-without-maintainers::{}'.format(
+    print('::set-output name=packages-without-maintainers::"{}"'.format(
         ' '.join(packages_without_maintainers)))
-    print('::set-output name=maintainers::{}'.format(' '.join(maintainers)))
+    print('::set-output name=maintainers::"{}"'.format(' '.join(maintainers)))
     print('::set-output name=author::{}'.format(author))
 
 
