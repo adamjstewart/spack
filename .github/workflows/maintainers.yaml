@@ -15,15 +15,12 @@ jobs:
       uses: actions/checkout@v2
     - name: Get Changed Files
       id: changes
-      uses: lots0logs/gh-action-get-changed-files@2.0.6
-      with:
-        token: GITHUB_TOKEN
+      uses: trilom/file-changes-action@v1.2.4
     - run: |
-        echo ${{ steps.changes.outputs.all }}
-        echo ${{ steps.changes.outputs.added }}
-        echo ${{ steps.changes.outputs.deleted }}
-        echo ${{ steps.changes.outputs.renamed }}
-        echo ${{ steps.changes.outputs.modified }}
+        echo ${{ steps.changes.outputs.files }}
+        echo ${{ steps.changes.outputs.files_added }}
+        echo ${{ steps.changes.outputs.files_modified }}
+        echo ${{ steps.changes.outputs.files_removed }}
     - name: Get Maintainers
       id: maintainers
       uses: ./.github/actions/maintainers
