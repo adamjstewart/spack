@@ -27,7 +27,7 @@ jobs:
       id: maintainers
       uses: ./.github/actions/maintainers
       with:
-        author: ${{ github.actor }}
+        author: ${{ github.event.pull_request.user.login }}
         changes: ${{ steps.changes.outputs.files }}
     - run: |
         echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
@@ -36,6 +36,7 @@ jobs:
     - name: Notify Maintainers
       uses: peter-evans/create-or-update-comment@v1.4.1
       with:
+        issue-number: ${{ github.event.pull_request.number }}
         body: |
           ${{ steps.maintainers.outputs.maintainers }} can you review this PR?
 
@@ -45,13 +46,14 @@ jobs:
     - name: Request Maintainers
       uses: peter-evans/create-or-update-comment@v1.4.1
       with:
+        issue-number: ${{ github.event.pull_request.number }}
         body: |
           Hi ${{ github.actor }}! I noticed that the following package(s) don't have maintainers:
           ${{ steps.maintainers.outputs.packages-without-maintainers }}
 
           Are you interested in adopting these package(s)? If so, simply add the following to the package class:
           ```python
-              maintainers = ['${{ github.actor }}']
+              maintainers = ['${{ github.event.pull_request.user.login }}']
           ```
           You don't have to be a Spack expert or package developer in order to be a "maintainer", it just gives us a list of users willing to review PRs or debug issues relating to this package.
       if: ${{ steps.maintainers.outputs.packages-without-maintainers }}
