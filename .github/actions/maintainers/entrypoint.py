@@ -47,21 +47,22 @@ def main(author, changes):
     maintainers = set()
     for pkg in changed_pkgs:
         pkg_maintainers = set(spack('maintainers', pkg))
+
+        # No need to ask the author to review their own PR
+        pkg_maintainers.discard(author)
+
         if pkg_maintainers:
             packages_with_maintainers.append(pkg)
             maintainers |= pkg_maintainers
         else:
             packages_without_maintainers.append(pkg)
 
-    # No need to ask the author to review their own PR
-    maintainers.discard(author)
-
     # Return outputs so that later GitHub actions can access them
     print('::set-output name=packages-with-maintainers::{}'.format(
-        ' '.join(packages_with_maintainers)))
+        '\n* '.join(packages_with_maintainers)))
     print('::set-output name=packages-without-maintainers::{}'.format(
-        ' '.join(packages_without_maintainers)))
-    print('::set-output name=maintainers::{}'.format(' '.join(maintainers)))
+        '\n* '.join(packages_without_maintainers)))
+    print('::set-output name=maintainers::{}'.format(' @'.join(maintainers)))
 
 
 if __name__ == '__main__':

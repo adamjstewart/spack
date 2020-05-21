@@ -18,38 +18,31 @@ jobs:
       uses: trilom/file-changes-action@v1.2.4
       with:
         output: ','
-    - run: |
-        echo ${{ steps.changes.outputs.files }}
-        echo ${{ steps.changes.outputs.files_added }}
-        echo ${{ steps.changes.outputs.files_modified }}
-        echo ${{ steps.changes.outputs.files_removed }}
     - name: Get Maintainers
       id: maintainers
       uses: ./.github/actions/maintainers
       with:
         author: ${{ github.event.pull_request.user.login }}
         changes: ${{ steps.changes.outputs.files }}
-    - run: |
-        echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
-        echo ${{ steps.maintainers.outputs.packages-without-maintainers }}
-        echo ${{ steps.maintainers.outputs.maintainers }}
     - name: Notify Maintainers
       uses: peter-evans/create-or-update-comment@v1.4.1
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          ${{ steps.maintainers.outputs.maintainers }} can you review this PR?
+          @${{ steps.maintainers.outputs.maintainers }} can you review this PR?
 
-          This PR modifies the following package(s), for which you are listed as maintainers:
-          ${{ steps.maintainers.outputs.packages-with-maintainers }}
+          This PR modifies the following package(s), for which you are listed as a maintainer:
+
+          * ${{ steps.maintainers.outputs.packages-with-maintainers }}
       if: ${{ steps.maintainers.outputs.maintainers }}
     - name: Request Maintainers
       uses: peter-evans/create-or-update-comment@v1.4.1
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          Hi ${{ github.actor }}! I noticed that the following package(s) don't have maintainers:
-          ${{ steps.maintainers.outputs.packages-without-maintainers }}
+          Hi @${{ github.event.pull_request.user.login }}! I noticed that the following package(s) don't have maintainers:
+
+          * ${{ steps.maintainers.outputs.packages-without-maintainers }}
 
           Are you interested in adopting these package(s)? If so, simply add the following to the package class:
           ```python
