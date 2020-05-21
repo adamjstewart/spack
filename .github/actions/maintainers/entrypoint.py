@@ -60,10 +60,10 @@ def main():
 
     # Return outputs so that later GitHub actions can access them
     print('::set-output name=packages-with-maintainers::{}'.format(
-        packages_with_maintainers))
+        ' '.join(packages_with_maintainers)))
     print('::set-output name=packages-without-maintainers::{}'.format(
-        packages_without_maintainers))
-    print('::set-output name=maintainers::{}'.format(maintainers))
+        ' '.join(packages_without_maintainers)))
+    print('::set-output name=maintainers::{}'.format(' '.join(maintainers)))
     print('::set-output name=author::{}'.format(author))
 
 
