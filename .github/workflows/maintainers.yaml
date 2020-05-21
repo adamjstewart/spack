@@ -12,8 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/develop:refs/remotes/origin/develop
     - uses: ./.github/actions/maintainers
     - run: |
         echo ${{ steps.maintainers.outputs.packages-with-maintainers }}
