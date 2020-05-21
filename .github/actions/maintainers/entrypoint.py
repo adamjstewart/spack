@@ -36,6 +36,9 @@ def main(author, changes):
         author (str): the GitHub login of the PR author
         changes (list): the files changed in this PR
     """
+    print('::warning::Author - {}'.format(author))
+    print('::warning::Change - {}'.format(changes))
+
     # Find a set of modified packages
     changed_pkgs = set()
     for filename in changes:
@@ -55,6 +58,8 @@ def main(author, changes):
             maintainers |= pkg_maintainers
         else:
             packages_without_maintainers.append(pkg)
+
+    print('::warning::Maintainers - {}'.format(maintainers))
 
     # No need to ask the author to review their own PR
     maintainers.discard(author)
