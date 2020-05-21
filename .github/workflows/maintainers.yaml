@@ -6,6 +6,8 @@ on:
     - develop
     paths:
       - 'var/spack/repos/builtin/packages/**'
+    types:
+      - opened
 
 jobs:
   maintainers:
