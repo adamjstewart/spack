@@ -15,7 +15,9 @@ class G2o(CMakePackage):
 
     homepage = "https://openslam-org.github.io/g2o.html"
     url      = "https://github.com/RainerKuemmerle/g2o/archive/20200410_git.tar.gz"
+    git      = "https://github.com/RainerKuemmerle/g2o.git"
 
+    version('master', branch='master')
     version('20200410_git', sha256='b79eb1407ae7f2a9e6a002bb4b41d65402c185855db41a9ef4a6e3b42abaec4c')
 
     depends_on('cmake@3.1:', type='build')
