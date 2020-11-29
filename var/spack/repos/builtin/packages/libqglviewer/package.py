@@ -10,24 +10,18 @@ class Libqglviewer(QMakePackage):
 
     homepage = "http://libqglviewer.com/"
     url      = "http://libqglviewer.com/src/libQGLViewer-2.7.2.tar.gz"
+    git      = "https://github.com/GillesDebunne/libQGLViewer.git"
 
     version('2.7.2', sha256='e2d2799dec5cff74548e951556a1fa06a11d9bcde2ce6593f9c27a17543b7c08')
 
     # http://libqglviewer.com/installUnix.html
+    # TODO: figure out how to build .dylib instead of Framework on macOS
+    # https://github.com/GillesDebunne/libQGLViewer/issues/49
 
     depends_on('qt+opengl')
     depends_on('freeglut', when='^qt@:3.0')
 
-    def patch(self):
-        if self.spec.satisfies('platform=darwin'):
-            # Build .dylib instead of Framework
-            filter_file('!staticlib: CONFIG *= lib_bundle', '',
-                        join_path('QGLViewer', 'QGLViewer.pro'))
+    build_directory = 'QGLViewer'
 
     def qmake_args(self):
-        args = ['PREFIX=' + self.prefix]
-
-        if self.spec.satisfies('platform=darwin'):
-            args.extend(['-spec', 'macx-g++'])
-
-        return args
+        return ['PREFIX=' + self.prefix]

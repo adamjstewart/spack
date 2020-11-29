@@ -1,0 +1,106 @@
+diff -Naur a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2020-11-28 20:15:38.000000000 -0600
++++ b/CMakeLists.txt	2020-11-28 20:27:56.000000000 -0600
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.9)
++cmake_minimum_required(VERSION 3.0)
+ set(LsdSlam_PROJECT_NAME lsd_slam_and_apps)
+ project(${LsdSlam_PROJECT_NAME})
+ set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # for organizing code to folders
+diff -Naur a/apps/CMakeLists.txt b/apps/CMakeLists.txt
+--- a/apps/CMakeLists.txt	2020-11-28 20:15:38.000000000 -0600
++++ b/apps/CMakeLists.txt	2020-11-28 20:28:13.000000000 -0600
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.7)
++cmake_minimum_required(VERSION 3.0)
+ project(lsd_slam_apps)
+ 
+ add_subdirectory(slam)
+diff -Naur a/apps/slam/CMakeLists.txt b/apps/slam/CMakeLists.txt
+--- a/apps/slam/CMakeLists.txt	2020-11-28 20:15:38.000000000 -0600
++++ b/apps/slam/CMakeLists.txt	2020-11-28 20:28:20.000000000 -0600
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.9)
++cmake_minimum_required(VERSION 3.0)
+ project(slam_app)
+ 
+ ## demos
+diff -Naur a/cmake/LsdSlamDependencies.cmake b/cmake/LsdSlamDependencies.cmake
+--- a/cmake/LsdSlamDependencies.cmake	2020-11-28 20:15:38.000000000 -0600
++++ b/cmake/LsdSlamDependencies.cmake	2020-11-28 20:31:13.000000000 -0600
+@@ -30,7 +30,8 @@
+ 
+ ##==============================================================================
+ # G2O
+-find_package(G2O REQUIRED)
++find_package(g2o CONFIG REQUIRED)
++find_package(Qt5 CONFIG COMPONENTS Core Widgets Xml Gui OpenGL REQUIRED)
+ set(G2O_BINARY_DIR ${G2O_ROOT}/bin)
+ 
+ set(G2O_LIBRARIES optimized ${G2O_CORE_LIBRARY} debug ${G2O_CORE_LIBRARY_DEBUG} 
+@@ -60,16 +61,34 @@
+   add_definitions(-DHAVE_SOLVER_EIGEN)
+ endif()
+ 
+-if(APPLE)
+-  find_package(CSparse REQUIRED)
+-  list(APPEND G2O_LIBRARIES ${CSPARSE_LIBRARY})
+-  list(APPEND EXTRA_INC_DIRS ${CSPARSE_INCLUDE_DIR})
+-else()
+-  link_directories(${G2O_ROOT}/lib)
+-endif()
++link_directories(${G2O_ROOT}/lib)
+ include_directories(${G2O_INCLUDE_DIR})
+ cull_library_paths(G2O_LIBRARIES)
+-list(APPEND LsdSlam_EXTERNAL_LIBS ${G2O_LIBRARIES})
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::freeglut_minimal)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::stuff)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::opengl_helper)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::core)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::g2o_cli_library)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::g2o_hierarchical_library)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::g2o_simulator_library)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::viewer_library)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_data)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_slam2d)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_slam3d)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_sba)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_sim3)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_icp)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_sclam2d)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_slam2d_addons)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::types_slam3d_addons)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::solver_pcg)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::solver_dense)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::solver_structure_only)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::solver_csparse)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::csparse_extension)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::solver_slam2d_linear)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::solver_cholmod)
++list(APPEND LsdSlam_EXTERNAL_LIBS g2o::solver_eigen)
+ 
+ ##==============================================================================
+ # OpenGL
+@@ -93,4 +112,4 @@
+ if(GLEW_FOUND)
+   include_directories(${GLEW_INCLUDE_DIR})
+   list(APPEND LsdSlam_EXTERNAL_LIBS ${GLEW_LIBRARIES})
+-endif()
+\ No newline at end of file
++endif()
+diff -Naur a/lsd_slam/CMakeLists.txt b/lsd_slam/CMakeLists.txt
+--- a/lsd_slam/CMakeLists.txt	2020-11-28 20:15:38.000000000 -0600
++++ b/lsd_slam/CMakeLists.txt	2020-11-28 20:28:04.000000000 -0600
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.9)
++cmake_minimum_required(VERSION 3.0)
+ project(lsd_slam)
+ 
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+@@ -25,4 +25,4 @@
+ 
+ target_link_libraries(${lib_target} ${LsdSlam_ALL_LIBRARIES})
+ list(APPEND LsdSlam_ALL_LIBRARIES ${lib_target})
+-lsd_slam_print_status("LsdSlam_ALL_LIBRARIES slam:${LsdSlam_ALL_LIBRARIES}")
+\ No newline at end of file
++lsd_slam_print_status("LsdSlam_ALL_LIBRARIES slam:${LsdSlam_ALL_LIBRARIES}")
