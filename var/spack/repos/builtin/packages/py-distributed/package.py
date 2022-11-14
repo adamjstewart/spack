@@ -63,7 +63,6 @@ class PyDistributed(PythonPackage):
     depends_on("py-tornado@6.0.3:", type=("build", "run"), when="^python@3.8:")
     depends_on("py-zict@0.1.3:", type=("build", "run"))
     depends_on("py-pyyaml", type=("build", "run"))
-    depends_on("py-futures", when="@:1 ^python@2.7:2.8", type=("build", "run"))
     depends_on("py-singledispatch", when="@:1 ^python@2.7:2.8", type=("build", "run"))
 
     def patch(self):
