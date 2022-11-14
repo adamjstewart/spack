@@ -43,7 +43,6 @@ class PyMypy(PythonPackage):
     depends_on("py-typed-ast@1.3.1:1.3", when="@:0.699", type=("build", "run"))
     depends_on("py-typing-extensions@3.10:", when="@0.930:", type=("build", "run"))
     depends_on("py-typing-extensions@3.7.4:", when="@0.700:", type=("build", "run"))
-    depends_on("py-typing@3.5.3:", when="@:0.699 ^python@:3.4", type=("build", "run"))
     depends_on("py-mypy-extensions@0.4.3:", when="@0.930:", type=("build", "run"))
     depends_on("py-mypy-extensions@0.4.3:0.4", when="@0.700:0.929", type=("build", "run"))
     depends_on("py-mypy-extensions@0.4.0:0.4", when="@:0.699", type=("build", "run"))

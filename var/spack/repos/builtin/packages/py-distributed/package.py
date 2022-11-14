@@ -48,7 +48,6 @@ class PyDistributed(PythonPackage):
     depends_on("py-cloudpickle@1.3.0:", type=("build", "run"), when="@2.17.0:2.20.0")
     depends_on("py-cloudpickle@1.5.0:", type=("build", "run"), when="@2.21.0:")
     depends_on("py-jinja2", type=("build", "run"), when="@2022.2.1:")
-    depends_on("py-contextvars", type=("build", "run"), when="@2020: ^python@:3.6")
     depends_on("py-msgpack", type=("build", "run"), when="@:2.10.0")
     depends_on("py-msgpack@0.6.0:", type=("build", "run"), when="@2.11.0:")
     depends_on("py-packaging@20.0:", type=("build", "run"), when="@2022.2.1:")
@@ -63,7 +62,6 @@ class PyDistributed(PythonPackage):
     depends_on("py-tornado@6.0.3:", type=("build", "run"), when="^python@3.8:")
     depends_on("py-zict@0.1.3:", type=("build", "run"))
     depends_on("py-pyyaml", type=("build", "run"))
-    depends_on("py-singledispatch", when="@:1 ^python@2.7:2.8", type=("build", "run"))
 
     def patch(self):
         filter_file("^dask .*", "", "requirements.txt")
