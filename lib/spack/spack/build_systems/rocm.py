@@ -1,4 +1,4 @@
-# Copyright 2013-2021 Lawrence Livermore National Security, LLC and other
+# Copyright 2013-2022 Lawrence Livermore National Security, LLC and other
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -75,10 +75,9 @@
 #    does not like its directory structure.
 #
 
-from spack.package import PackageBase
-from spack.directives import depends_on, variant, conflicts
-
 import spack.variant
+from spack.directives import conflicts, depends_on, variant
+from spack.package_base import PackageBase
 
 
 class ROCmPackage(PackageBase):
@@ -91,30 +90,59 @@ class ROCmPackage(PackageBase):
     # https://llvm.org/docs/AMDGPUUsage.html
     # Possible architectures
     amdgpu_targets = (
-        'gfx701', 'gfx801', 'gfx802', 'gfx803',
-        'gfx900', 'gfx906', 'gfx908', 'gfx1010',
-        'gfx1011', 'gfx1012'
+        "gfx701",
+        "gfx801",
+        "gfx802",
+        "gfx803",
+        "gfx900",
+        "gfx900:xnack-",
+        "gfx902",
+        "gfx904",
+        "gfx906",
+        "gfx906:xnack-",
+        "gfx908",
+        "gfx908:xnack-",
+        "gfx909",
+        "gfx90a",
+        "gfx90a:xnack-",
+        "gfx90a:xnack+",
+        "gfx90c",
+        "gfx940",
+        "gfx1010",
+        "gfx1011",
+        "gfx1012",
+        "gfx1013",
+        "gfx1030",
+        "gfx1031",
+        "gfx1032",
+        "gfx1033",
+        "gfx1034",
+        "gfx1035",
+        "gfx1036",
+        "gfx1100",
+        "gfx1101",
+        "gfx1102",
+        "gfx1103",
     )
 
-    variant('rocm', default=False, description='Enable ROCm support')
+    variant("rocm", default=False, description="Enable ROCm support")
 
     # possible amd gpu targets for rocm builds
-    variant('amdgpu_target',
-            description='AMD GPU architecture',
-            values=spack.variant.any_combination_of(*amdgpu_targets))
+    variant(
+        "amdgpu_target",
+        description="AMD GPU architecture",
+        values=spack.variant.any_combination_of(*amdgpu_targets),
+        when="+rocm",
+    )
 
-    depends_on('llvm-amdgpu', when='+rocm')
-    depends_on('hsa-rocr-dev', when='+rocm')
-    depends_on('hip', when='+rocm')
+    depends_on("llvm-amdgpu", when="+rocm")
+    depends_on("hsa-rocr-dev", when="+rocm")
+    depends_on("hip", when="+rocm")
 
-    conflicts('^blt@:0.3.6', when='+rocm')
+    conflicts("^blt@:0.3.6", when="+rocm")
 
     # need amd gpu type for rocm builds
-    conflicts('amdgpu_target=none', when='+rocm')
-
-    # Make sure amdgpu_targets cannot be used without +rocm
-    for value in amdgpu_targets:
-        conflicts('~rocm', when='amdgpu_target=' + value)
+    conflicts("amdgpu_target=none", when="+rocm")
 
     # https://github.com/ROCm-Developer-Tools/HIP/blob/master/bin/hipcc
     # It seems that hip-clang does not (yet?) accept this flag, in which case
@@ -123,7 +151,7 @@ class ROCmPackage(PackageBase):
     @staticmethod
     def hip_flags(amdgpu_target):
         archs = ",".join(amdgpu_target)
-        return '--amdgpu-target={0}'.format(archs)
+        return "--amdgpu-target={0}".format(archs)
 
     # HIP version vs Architecture
 
